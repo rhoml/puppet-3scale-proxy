@@ -18,7 +18,10 @@
 # === Copyright
 #
 # Copyright 2013 Rhommel Lamas.
-class nginx inherits nginx::params {
+class nginx (
+  $openresty = $nginx::params::openresty_path
+  ) inherits nginx::params {
+
   include nginx::dependencies
   include nginx::install
   include nginx::service
@@ -32,15 +35,15 @@ class nginx inherits nginx::params {
   file {
     "${nginx::params::openresty_path}/nginx/conf/nginx.conf":
       ensure  => 'present',
-      source  => "puppet:///modules/nginx/proxy_configs/nginx_${provider_id}.conf",
+      source  => "puppet:///modules/nginx/proxy_configs/nginx_${nginx::params::provider_id}.conf",
       require => [ User['nginx'], Exec['make-install'] ],
       notify  => Service['nginx']
   }
 
   file {
-    "${nginx::params::openresty_path}/nginx/conf/nginx_${provider_id}.lua":
+    "${nginx::params::openresty_path}/nginx/conf/nginx_${nginx::params::provider_id}.lua":
       ensure => 'present',
-      source => "puppet:///modules/nginx/proxy_configs/nginx_${provider_id}.lua",
+      source => "puppet:///modules/nginx/proxy_configs/nginx_${nginx::params::provider_id}.lua",
       require => File["${nginx::params::openresty_path}/nginx/conf/nginx.conf"],
       notify  => Service['nginx']
   }
