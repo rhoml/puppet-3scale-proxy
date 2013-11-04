@@ -2,6 +2,6 @@
 class nginx::dependencies {
   case $::operatingsystem {
     Ubuntu,Debian: { require nginx::dependencies::ubuntu }
-    default:       { notify('We do not support this OS') }
+    default: { notify { 'not-available': message => "This OS is not supported" } }
   }
 }

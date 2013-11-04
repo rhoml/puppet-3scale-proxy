@@ -21,7 +21,12 @@
 # === Copyright
 #
 # Copyright 2013 Rhommel Lamas.
-class nginx::service inherits nginx::params {
+class nginx::service (
+  $provider_id       = "${nginx::params::provider_id}",
+  $openresty_version = "${nginx::params::openresty_version}",
+  $prefix            = "${nginx::params::prefix}",
+  $openresty_path    = "${nginx::params::openresty_path}"
+) inherits nginx::params {
   service {
     'nginx':
       ensure     => 'running',
@@ -29,6 +34,6 @@ class nginx::service inherits nginx::params {
       pattern    => 'nginx',
       hasstatus  => true,
       hasrestart => true,
-      require    => [ File["${nginx::params::openresty_path}/nginx/conf/nginx.conf"], File["${nginx::params::openresty_path}/nginx/conf/nginx_${nginx::params::provider_id}.lua"], File['/etc/init.d/nginx'] ]
+      require    => [ File["${openresty_path}/nginx/conf/nginx.conf"], File["${openresty_path}/nginx/conf/nginx_${provider_id}.lua"], File['/etc/init.d/nginx'] ]
   }
 }

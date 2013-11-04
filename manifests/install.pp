@@ -17,7 +17,12 @@
 # === Copyright
 #
 # Copyright 2013 Rhommel Lamas.
-class nginx::install inherits nginx::params {
+class nginx::install (
+  $provider_id       = "${nginx::params::provider_id}",
+  $openresty_version = "${nginx::params::openresty_version}",
+  $prefix            = "${nginx::params::prefix}",
+  $openresty_path    = "${nginx::params::openresty_path}"
+  ) inherits nginx::params {
 
   File {
     owner => 'nginx',
@@ -25,9 +30,9 @@ class nginx::install inherits nginx::params {
   }
 
   # Ensures needed directories exist
-  if ! defined(File["${nginx::params::prefix}"]) {
+  if ! defined(File["${prefix}"]) {
     file {
-      "${nginx::params::prefix}":
+      "${prefix}":
         ensure => 'directory',
         owner  => 'root',
         group  => 'root',
@@ -36,7 +41,7 @@ class nginx::install inherits nginx::params {
   }
 
   # Ensure User/group Nginx exists as a system user
-  group { 'nginx': gid  =>  1200 }
+  group { 'nginx': gid  =>  '1200' }
 
   user {
     'nginx':
@@ -51,29 +56,30 @@ class nginx::install inherits nginx::params {
 
   # Ensure we have the needed Nginx and dependencies packages
   file {
-    "/usr/src/ngx_openresty-${nginx::params::openresty_version}.tar.gz":
-      source  => "puppet:///modules/nginx/packages/ngx_openresty-${nginx::params::openresty_version}.tar.gz",
+    "/usr/src/ngx_openresty-${openresty_version}.tar.gz":
+      ensure  => 'present',
+      source  => "puppet:///modules/nginx/packages/ngx_openresty-${openresty_version}.tar.gz",
       alias   => 'nginx-source-tgz',
       before  => Exec['untar-nginx-source']
   }
 
   # Untar the files.
   exec {
-    "tar xzf ngx_openresty-${nginx::params::openresty_version}.tar.gz":
+    "tar xzf ngx_openresty-${openresty_version}.tar.gz":
       path      => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/' ],
-      cwd       => "${nginx::params::prefix}",
-      creates   => "${nginx::params::prefix}/ngx_openresty-${nginx::params::openresty_version}",
+      cwd       => "${prefix}",
+      creates   => "${prefix}/ngx_openresty-${openresty_version}",
       alias     => 'untar-nginx-source',
       subscribe => File['nginx-source-tgz']
   }
 
   # Configure nginx with needed options --with-luajit is required.
   exec {
-    "/bin/ls | ./configure --prefix=${nginx::params::openresty_path} --with-luajit --with-http_iconv_module -j2 && touch ${nginx::params::prefix}/ngx_openresty-${nginx::params::openresty_version}/.config":
+    "/bin/ls | ./configure --prefix=${openresty_path} --with-luajit --with-http_iconv_module -j2 && touch ${prefix}/ngx_openresty-${openresty_version}/.config":
       path    => [ '/bin/', '/sbin/' ,'/usr/bin/','/usr/sbin/' ],
-      cwd     => "${nginx::params::prefix}/ngx_openresty-${nginx::params::openresty_version}",
+      cwd     => "${prefix}/ngx_openresty-${openresty_version}",
       require => [ Package['libreadline-dev'], Package['libncurses5-dev'], Package['libpcre3'], Package['libpcre3-dev'], Package['libssl-dev'], Package['perl'], Exec['untar-nginx-source'] ],
-      creates => "${nginx::params::prefix}/ngx_openresty-${nginx::params::openresty_version}/.config",
+      creates => "${prefix}/ngx_openresty-${openresty_version}/.config",
       alias   => 'configure-nginx',
       before  => Exec['make-install']
   }
@@ -81,7 +87,7 @@ class nginx::install inherits nginx::params {
   exec {
     'make && make install':
       path    => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ],
-      cwd     => "/usr/src/ngx_openresty-${nginx::params::openresty_version}",
+      cwd     => "/usr/src/ngx_openresty-${openresty_version}",
       alias   => 'make-install',
       creates => '/opt/openresty/nginx/sbin/nginx',
       require => Exec['configure-nginx']

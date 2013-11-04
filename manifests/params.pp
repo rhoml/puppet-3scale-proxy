@@ -18,5 +18,4 @@ class nginx::params {
   $openresty_path    = '/opt/openresty'
   $openresty_version = '1.2.3.8'
   $prefix            = '/usr/src'
-
 }
