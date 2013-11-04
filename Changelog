@@ -1,0 +1,3 @@
+* 2013-11-04 Rhommel Lamas <roml@rhommell.com> 
+- Release 0.2.0 Fixed bug on nginx template
+- Added Tests to the module
