@@ -17,6 +17,7 @@ After gathering 3scale's configuration, you will download a **proxy_conf.zip** f
 ### Cloning the repo
 
 ````
+  cd /path/to/your/puppet/modules
   git clone git@github.com:rhoml/puppet-3scale-proxy-module.git nginx
   cd nginx/files
   unzip /path/to/proxy_conf.zip
