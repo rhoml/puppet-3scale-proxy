@@ -33,6 +33,6 @@ RSpec.configure do |c|
     puppet_master_install
 
     # Copy this module into the module path of the test node
-    puppet_module_install(:source => proj_root, :module_name => 'puppetdb')
+    puppet_module_install(:source => proj_root, :module_name => 'nginx')
   end
 end
