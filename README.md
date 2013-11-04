@@ -1,4 +1,4 @@
-Puppet module for 3scale proxy
+Puppet module for 3scale proxy [![Build Status](https://travis-ci.org/rhoml/puppet-3scale-proxy.png?branch=master)](https://travis-ci.org/rhoml/puppet-3scale-proxy)
 ============================
 
 ## Requirements
